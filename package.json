@@ -1,0 +1,24 @@
+{
+  "name": "tourease",
+  "version": "1.0.0",
+  "description": "An AI-powered tourism management information system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akramsu/TourEase.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akramsu/TourEase/issues"
+  },
+  "homepage": "https://github.com/akramsu/TourEase#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
