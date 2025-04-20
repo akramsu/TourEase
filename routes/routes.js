@@ -3,11 +3,14 @@ const router = express.Router();
 
 const {getAll, getById, add, deleteById, updateById} = require('../controllers/userController')
 
+router.get('/', (req, res) => {
+    res.send('welcome to TourEase');
+});
 
-router.get('/getAll', getAll);
-router.get('/getById', getById);
+router.get('/get', getAll);
+router.get('/getById/:id', getById);
 router.post('/add', add);
-router.delete('/delete', deleteById);
-router.put('/update', updateById);
+router.delete('/delete/:id', deleteById);
+router.put('/update/:id', updateById);
 
-const routes = module.exports;
+module.exports = router;
