@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
-const router = require('./routes/routes');
+const userRouter = require('./routes/userRoutes');
+const authRouter = require('./routes/authRoutes');
 const dbConn = require('./db/dbConn');
 
 dbConn();
@@ -8,7 +9,8 @@ dbConn();
 const app = express();
 app.use(express.json());
 
-app.use('/tourease', router);
+app.use('/tourease', userRouter);
+app.use('/tourease', authRouter);
 
 const PORT = process.env.PORT || 3000;
 
