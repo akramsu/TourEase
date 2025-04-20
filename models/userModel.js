@@ -22,8 +22,7 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: 'Number',
-        required: true,
-        unique: true,
+        // required: true,
         match: [/^\+?[1-9]\d{1,14}$/, 'Please fill a valid phone number']  // Basic phone number validation (international)
     },
     role: {
@@ -48,7 +47,8 @@ const userSchema = new mongoose.Schema({
         maxLength: [6, 'maximum length is 6 digits']
     },
     birthdate:{
-        type: 'Date'
+        type: 'Date', 
+        default: Date.now
     }
 }, 
 {timestamps: true} //This adds createdAt and updatedAt fields automatically
