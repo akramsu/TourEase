@@ -88,18 +88,18 @@ const signin = async (req, res) => {
         }
 
         const accessToken = jwt.sign({
-            userId : user._id,
-            username: user.username,
-            role: user.role
-        }, process.env.JWT_PRIVATE_KEY,{
-            expiresIn: '15m'   //to set a time for the token
+            userId: checkUsername._id, // Corrected to use checkUsername._id
+            username: checkUsername.username, // Corrected to use checkUsername.username
+            role: checkUsername.role
+        }, process.env.JWT_PRIVATE_KEY, {
+            expiresIn: '15m'   // Set a time for the token
         });
-
+        
         res.status(200).json({
             success: true,
             message: 'user signed in successfully',
             accessToken
-        })
+        });
         
     } catch (error) {
         res.status(500).json({
@@ -107,6 +107,6 @@ const signin = async (req, res) => {
             message: 'failed to signin'
         });
     }
-}
+};
 
 module.exports = {signup, signin};
