@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const uploadToCloudinary = require('../helpers/cloudinaryHelper');
 const img = require('../models/imgModel');
+const user = require('../models/userModel');
+const cloudinaryConfig = require('../config/cloudinaryConfig');
+const authMiddleware = require('../middlewares/authMiddleware');
 const fs = require('fs');
+const { userInfo } = require('os');
 
 const uploadImg = async (req, res) => {
     try {
@@ -68,4 +72,47 @@ const getAllImages = async(req, res) =>{
     }
 }
 
-module.exports = {uploadImg, getAllImages};
+const deleteImage = async (req, res) => {
+    try {
+        const imageId = req.params.id;
+        const foundImage = img.findById(imageId);
+        
+        const currentUserId = user.userId;
+        const checkUser = user.findById(currentUserId);
+    
+        if(!checkUser){
+            res.status(400).json({
+                success: false,
+                message: 'user not found'
+            });
+        }
+    
+        //now we check that image can be deleted only by the admin who uploaded it only
+        if (!foundImage.uploadedBy === currentUserId) {
+            res.status(403).json({
+                success: false,
+                message: 'access denied cannot delete an image uploaded by other amdin'
+            });
+        }
+    
+        //first we delete image from cloudinary
+        await cloudinaryConfig.uploader.destroy(foundImage.publicId);
+    
+        //now we delete it from DB
+        await img.findByIdAndDelete(imageId);
+    
+        res.status(200).json({
+            success: true,
+            message: 'image has been deleted successfully'
+        });
+    
+    } catch (error) {
+        console.log('failed due to an error', error);
+        res.status(500).json({
+            success: false,
+            message: 'failed to delete image'
+        });
+    }
+}
+
+module.exports = {uploadImg, getAllImages, deleteImage};

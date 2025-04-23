@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const user = require('../models/userModel')
+const user = require('../models/userModel');
 
 const signup = async (req, res) => {
     try {
@@ -109,4 +109,50 @@ const signin = async (req, res) => {
     }
 };
 
-module.exports = {signup, signin};
+
+const changePassword = async (req, res) => {
+    try {
+        console.log(req.userInfo.userId);
+        
+        // First we get user id from the authmiddleware request userInfo that contains the decoded token info
+        const userId = req.userInfo.userId;
+
+        const { oldPassword, newPassword } = req.body;
+
+        // Check current user is logged in
+        const foundUser = await user.findById(userId);  
+        if (!foundUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User not found!'
+            });
+        }
+
+        // Now we check whether the old password is the same as the new one
+        if (oldPassword === newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password cannot be the same as the old one. Please input a new one!'
+            });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const newHashedPassword = await bcrypt.hash(newPassword, salt);
+
+        foundUser.password = newHashedPassword;
+        await foundUser.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password has been changed successfully'
+        });
+    } catch (error) {
+        console.error('Error changing password:', error);  // Log the full error for debugging
+        res.status(500).json({
+            success: false,
+            message: 'Failed to change password'
+        });
+    }
+};
+
+module.exports = {signup, signin, changePassword};
