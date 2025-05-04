@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     try {
-        console.log(`server is now running successfully in ${PORT}`);
+        console.log(`server is now running successfully in http://localhost:${PORT}/tourease/`);
     } catch (error) {
        console.error('failed to connect to server', error);
     }

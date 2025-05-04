@@ -92,7 +92,7 @@ const signin = async (req, res) => {
             username: checkUsername.username, // Corrected to use checkUsername.username
             role: checkUsername.role
         }, process.env.JWT_PRIVATE_KEY, {
-            expiresIn: '15m'   // Set a time for the token
+            expiresIn: '60m'   // Set a time for the token
         });
         
         res.status(200).json({

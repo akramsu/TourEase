@@ -29,9 +29,6 @@ const uploadImg = async (req, res) => {
 
         await newImg.save();
 
-        //delete the file from local storage:
-        // fs.unlinkSync(req.file.path)
-
         res.status(201).json({
             success: true,
             message: 'image is uploaded successfully',
@@ -49,7 +46,20 @@ const uploadImg = async (req, res) => {
 
 const getAllImages = async(req, res) =>{
     try {
-        const images = await img.find({});
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 2;
+        const skip = (page -1 ) * limit;
+
+        const sortBy = req.query.sortBy || 'createdAt';
+        const sortOrder = req.query.sortOrder === 'acs' ? 1 : -1;
+
+        totalImages = await img.countDocuments(); //a built in function in mongoose to count documents(data)
+        totalPages = Math.ceil(totalImages/ limit);
+
+        const sortObj = {};
+        sortObj[sortBy] = sortOrder;
+
+        const images = await img.find().sort().limit(limit).skip(skip);
 
         if (!images) {
             res.status(404).json({
@@ -61,7 +71,10 @@ const getAllImages = async(req, res) =>{
         res.status(200).json({
             success: true,
             message: 'get all images successfully',
-            images
+            currentPage: page,
+            totalImages: totalImages,
+            totalPages: totalPages,
+            date: images
         });
         
     } catch (error) {
@@ -75,26 +88,35 @@ const getAllImages = async(req, res) =>{
 const deleteImage = async (req, res) => {
     try {
         const imageId = req.params.id;
-        const foundImage = img.findById(imageId);
+        const foundImage = await img.findById(imageId);
+
+        //check whether images is in the DB or not
+        if (!foundImage) {
+            res.status(404).json({
+                success: false,
+                message: 'image was not found!'
+            })
+        }
         
-        const currentUserId = user.userId;
-        const checkUser = user.findById(currentUserId);
+        const currentUserId = req.userInfo.userId;
+        const checkUser = await user.findById(currentUserId);
     
         if(!checkUser){
-            res.status(400).json({
+            res.status(404).json({
                 success: false,
                 message: 'user not found'
             });
         }
     
         //now we check that image can be deleted only by the admin who uploaded it only
-        if (!foundImage.uploadedBy === currentUserId) {
-            res.status(403).json({
+        
+        if (foundImage.uploadedBy.toString() !== currentUserId) {
+            return res.status(403).json({
                 success: false,
                 message: 'access denied cannot delete an image uploaded by other amdin'
             });
         }
-    
+        
         //first we delete image from cloudinary
         await cloudinaryConfig.uploader.destroy(foundImage.publicId);
     
@@ -113,6 +135,6 @@ const deleteImage = async (req, res) => {
             message: 'failed to delete image'
         });
     }
-}
+};
 
 module.exports = {uploadImg, getAllImages, deleteImage};

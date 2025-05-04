@@ -5,7 +5,7 @@ const imgSchema = new mongoose.Schema({
     url: {type: String, required: true},
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', //refers to which user is currently uploading the img
+        ref: 'user', //refers to which user is currently uploading the img
         required: true
     }
 }, {timestamps: true}
