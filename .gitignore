@@ -1,9 +1,0 @@
-.env
-
-node_modules/
-
-*.log
-
-assets/img/
-
-uploads/
