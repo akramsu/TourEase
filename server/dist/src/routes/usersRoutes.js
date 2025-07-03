@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { register } from '../controllers/authController.js';
+import { createUser } from '../controllers/usersController.js';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+const router = Router();
+const upload = multer({ dest: 'uploads/' });
+router.post('/user/createUser', createUser);
+router.post('/user/register', register);
+export default router;
